@@ -486,8 +486,11 @@ function StatCard({ title, value, icon, trend, color, description }: any) {
         <div className="group h-32 w-full perspective-1000">
             <div className="relative h-full w-full transition-all duration-500 transform-style-3d group-hover:rotate-y-180">
                 {/* Front Face */}
-                <div className="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-none flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
+                <div className="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-none flex flex-col justify-between overflow-hidden">
+                    {/* Metallic Sheen Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent dark:from-slate-700/30 dark:via-transparent dark:to-transparent opacity-50 pointer-events-none" />
+
+                    <div className="relative z-10 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
                             <h3 className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{value}</h3>
@@ -496,7 +499,7 @@ function StatCard({ title, value, icon, trend, color, description }: any) {
                             {React.cloneElement(icon, { size: 20 })}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="relative z-10 flex items-center gap-2 mt-2">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
                             {trend}
                         </span>
