@@ -77,6 +77,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                     variants={containerVariants}
                     className="max-w-7xl mx-auto space-y-6 md:space-y-8"
                 >
+                    
                     {/* Header */}
                     <motion.header variants={itemVariants} className="flex flex-col md:flex-row justify-between items-center md:items-center border-b border-slate-200 dark:border-slate-800 pb-4 md:pb-6 gap-3 md:gap-0">
                         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-center md:text-left">
