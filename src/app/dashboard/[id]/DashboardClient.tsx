@@ -70,14 +70,14 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
     return (
         <div className={`${theme} min-h-screen transition-colors duration-300`}>
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white p-4 md:p-10 font-sans transition-colors duration-300">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white p-4 md:p-10 font-sans transition-colors duration-300">
                 <motion.div
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
                     className="max-w-7xl mx-auto space-y-6 md:space-y-8"
                 >
-                    
+
                     {/* Header */}
                     <motion.header variants={itemVariants} className="flex flex-col md:flex-row justify-between items-center md:items-center border-b border-slate-200 dark:border-slate-800 pb-4 md:pb-6 gap-3 md:gap-0">
                         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-center md:text-left">
@@ -345,8 +345,14 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                     </thead>
                                     <tbody>
                                         {workshops.filter((w: any) => w.status === 1).length > 0 ? (
-                                            workshops.filter((w: any) => w.status === 1).map((workshop: any) => (
-                                                <tr key={workshop.id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                            workshops.filter((w: any) => w.status === 1).map((workshop: any, index: number) => (
+                                                <motion.tr
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                    key={workshop.id}
+                                                    className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                                                >
                                                     <td className="py-4 px-4 text-slate-900 dark:text-white font-medium">{workshop.name}</td>
                                                     <td className="py-4 px-4 text-slate-500 dark:text-slate-400 text-sm">
                                                         {workshop.start_date ? format(new Date(workshop.start_date), 'dd/MM/yyyy') : 'N/A'}
@@ -355,7 +361,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                                         <Zap className="w-4 h-4 text-yellow-500" />
                                                         {workshop.total_school_cpd || 0}
                                                     </td>
-                                                </tr>
+                                                </motion.tr>
                                             ))
                                         ) : (
                                             <tr>
@@ -388,8 +394,14 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {workshops.filter((w: any) => w.status !== 1).map((workshop: any) => (
-                                            <tr key={workshop.id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                        {workshops.filter((w: any) => w.status !== 1).map((workshop: any, index: number) => (
+                                            <motion.tr
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                key={workshop.id}
+                                                className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                                            >
                                                 <td className="py-3 px-4 text-slate-800 dark:text-slate-200 font-medium text-sm">{workshop.name}</td>
                                                 <td className="py-3 px-4 text-slate-500 dark:text-slate-400 text-sm">
                                                     {workshop.start_date ? format(new Date(workshop.start_date), 'dd/MM/yyyy') : 'TBA'}
@@ -399,7 +411,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                                         Upcoming
                                                     </span>
                                                 </td>
-                                            </tr>
+                                            </motion.tr>
                                         ))}
                                         {workshops.filter((w: any) => w.status !== 1).length === 0 && (
                                             <tr>
@@ -484,7 +496,10 @@ function StatCard({ title, value, icon, trend, color, description }: any) {
     };
 
     return (
-        <div className="group h-32 w-full perspective-1000">
+        <motion.div
+            whileHover={{ y: -5 }}
+            className="group h-32 w-full perspective-1000 cursor-pointer"
+        >
             <div className="relative h-full w-full transition-all duration-500 transform-style-3d group-hover:rotate-y-180">
                 {/* Front Face */}
                 <div className="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-none flex flex-col justify-between overflow-hidden">
@@ -514,6 +529,6 @@ function StatCard({ title, value, icon, trend, color, description }: any) {
                     </p>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
