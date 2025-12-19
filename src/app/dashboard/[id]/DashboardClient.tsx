@@ -70,7 +70,14 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
     return (
         <div className={`${theme} min-h-screen transition-colors duration-300`}>
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white p-4 md:p-10 font-sans transition-colors duration-300">
+            <div
+                className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white p-4 md:p-10 font-sans transition-colors duration-300"
+                style={{
+                    backgroundImage: theme === 'light' ? "url('/bg_black.png')" : "url('/bg.png')",
+                    backgroundRepeat: 'repeat',
+                    backgroundSize: 'auto'
+                }}
+            >
                 <motion.div
                     initial="hidden"
                     animate="visible"
@@ -114,13 +121,13 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                         <StatCard title="Active Learners" value={stats.activeLearners} icon={<Activity />} trend="Engaged" color="green" description="Teachers who have started or completed at least one workshop." />
                         <StatCard title="Total Enrollments" value={stats.totalEnrollments} icon={<BookOpen />} trend="All Time" color="purple" description="Total number of workshop enrollments by your teachers." />
 
-                        <StatCard title="LIVE Completion Rate" value={`${stats.completionRate}%`} icon={<CheckCircle />} trend="Success" color="orange" description="Percentage of enrolled workshops that have been successfully completed." />
+                        <StatCard title="LIVE Completion Rate" value={`${stats.completionRate}%`} icon={<CheckCircle />} trend="Success" color="orange" description="Composite score based on active learner participation and workshop feedback." />
                         <StatCard title="CPD Hours Earned" value={stats.totalCPDEarned} icon={<Zap />} trend="Total Impact" color="pink" description="Total Continuous Professional Development hours earned by all teachers." />
                         <StatCard title="Avg Rating" value={stats.avgRating} icon={<Star />} trend="Feedback" color="teal" description="Average rating given by your teachers for attended workshops." />
 
                         <StatCard title="Avg CPD / Teacher" value={stats.avgCPDPerTeacher} icon={<BarChart2 />} trend="Per Capita" color="indigo" description="Average CPD hours earned per registered teacher." />
                         <StatCard title="Certificates Issued" value={stats.certificatesIssued} icon={<Award />} trend="Achievements" color="cyan" description="Total number of certificates issued for completed workshops." />
-                        <StatCard title="LIVE Engagement Rate" value={`${stats.engagementRate}%`} icon={<TrendingUp />} trend="Participation" color="amber" description="Percentage of enrollments that are either in-progress or completed." />
+                        <StatCard title="Avg Join Time" value={`${stats.avgJoinTime} mins`} icon={<TrendingUp />} trend="Participation" color="amber" description="Average time teachers spend in a workshop (joined/attended)." />
 
                         <StatCard title="LIVE Learning Hours" value={stats.totalLearningHours} icon={<Clock />} trend="Time Spent" color="rose" description="Total estimated time teachers have spent learning on the platform." />
                         <StatCard title="Workshops Assigned" value={stats.totalWorkshops} icon={<Layers />} trend="Available" color="emerald" description="Total number of workshops currently available to your school." />
@@ -449,9 +456,8 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                     </div>
                                     <div>
                                         <p className="text-amber-100 text-sm font-medium uppercase tracking-wider">Current Rank</p>
-                                        <div className="flex items-baseline gap-2">
+                                        <div>
                                             <span className="text-5xl font-extrabold">#{stats.schoolRank}</span>
-                                            <span className="text-xl text-amber-200">/ {stats.totalSchools}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -477,56 +483,85 @@ export default function DashboardClient({ data }: DashboardClientProps) {
     );
 }
 
-// StatCard Component with 3D Flip Effect
+// StatCard Component with Modern Glassmorphism & 3D Flip (No Metallic, Redesigned Back)
 function StatCard({ title, value, icon, trend, color, description }: any) {
-    const colors: any = {
-        blue: "from-blue-500 to-blue-600",
-        green: "from-green-500 to-green-600",
-        purple: "from-purple-500 to-purple-600",
-        orange: "from-orange-500 to-orange-600",
-        pink: "from-pink-500 to-pink-600",
-        teal: "from-teal-500 to-teal-600",
-        indigo: "from-indigo-500 to-indigo-600",
-        rose: "from-rose-500 to-rose-600",
-        emerald: "from-emerald-500 to-emerald-600",
-        cyan: "from-cyan-500 to-cyan-600",
-        amber: "from-amber-500 to-amber-600",
-        violet: "from-violet-500 to-violet-600",
-        yellow: "from-yellow-500 to-yellow-600",
+    const gradients: any = {
+        blue: "from-blue-500/20 to-blue-600/5",
+        green: "from-green-500/20 to-green-600/5",
+        purple: "from-purple-500/20 to-purple-600/5",
+        orange: "from-orange-500/20 to-orange-600/5",
+        pink: "from-pink-500/20 to-pink-600/5",
+        teal: "from-teal-500/20 to-teal-600/5",
+        indigo: "from-indigo-500/20 to-indigo-600/5",
+        rose: "from-rose-500/20 to-rose-600/5",
+        emerald: "from-emerald-500/20 to-emerald-600/5",
+        cyan: "from-cyan-500/20 to-cyan-600/5",
+        amber: "from-amber-500/20 to-amber-600/5",
+        violet: "from-violet-500/20 to-violet-600/5",
+        yellow: "from-yellow-500/20 to-yellow-600/5",
+    };
+
+    const textColors: any = {
+        blue: "text-blue-600 dark:text-blue-400",
+        green: "text-green-600 dark:text-green-400",
+        purple: "text-purple-600 dark:text-purple-400",
+        orange: "text-orange-600 dark:text-orange-400",
+        pink: "text-pink-600 dark:text-pink-400",
+        teal: "text-teal-600 dark:text-teal-400",
+        indigo: "text-indigo-600 dark:text-indigo-400",
+        rose: "text-rose-600 dark:text-rose-400",
+        emerald: "text-emerald-600 dark:text-emerald-400",
+        cyan: "text-cyan-600 dark:text-cyan-400",
+        amber: "text-amber-600 dark:text-amber-400",
+        violet: "text-violet-600 dark:text-violet-400",
+        yellow: "text-yellow-600 dark:text-yellow-400",
     };
 
     return (
         <motion.div
             whileHover={{ y: -5 }}
-            className="group h-32 w-full perspective-1000 cursor-pointer"
+            className="group h-40 w-full perspective-1000 cursor-pointer"
         >
             <div className="relative h-full w-full transition-all duration-500 transform-style-3d group-hover:rotate-y-180">
                 {/* Front Face */}
-                <div className="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-none flex flex-col justify-between overflow-hidden">
-                    {/* Metallic Sheen Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent dark:from-slate-700/30 dark:via-transparent dark:to-transparent opacity-50 pointer-events-none" />
+                <div className="absolute inset-0 backface-hidden overflow-hidden rounded-3xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-xl">
 
-                    <div className="relative z-10 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
-                            <h3 className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{value}</h3>
+                    {/* Gradient Mesh Background */}
+                    <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br ${gradients[color] || gradients.blue} blur-3xl opacity-60 transition-opacity duration-500`} />
+                    <div className={`absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-gradient-to-tr ${gradients[color] || gradients.blue} blur-3xl opacity-40 transition-opacity duration-500`} />
+
+                    <div className="relative z-10 p-6 flex flex-col justify-between h-full">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{title}</p>
+                                <h3 className="text-4xl font-black text-slate-800 dark:text-white mt-2 tracking-tight">{value}</h3>
+                            </div>
+                            <div className={`p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-sm ${textColors[color] || textColors.blue}`}>
+                                {React.cloneElement(icon, { size: 24, strokeWidth: 2.5 })}
+                            </div>
                         </div>
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${colors[color] || colors.blue} text-white shadow-lg`}>
-                            {React.cloneElement(icon, { size: 20 })}
+
+                        <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-white/20 dark:border-white/5 ${textColors[color] || textColors.blue}`}>
+                                {trend}
+                            </span>
                         </div>
-                    </div>
-                    <div className="relative z-10 flex items-center gap-2 mt-2">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
-                            {trend}
-                        </span>
                     </div>
                 </div>
 
-                {/* Back Face */}
-                <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-800 dark:to-slate-950 p-6 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-center items-center text-center">
-                    <p className="text-sm text-slate-200 leading-relaxed">
-                        {description || "No description available."}
-                    </p>
+                {/* Back Face - Redesigned */}
+                <div className="absolute inset-0 backface-hidden rotate-y-180 overflow-hidden rounded-3xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-xl p-6 flex flex-col justify-center items-center text-center">
+
+                    {/* Inverted Gradient Mesh for Back */}
+                    <div className={`absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-tl ${gradients[color] || gradients.blue} blur-3xl opacity-40 transition-opacity duration-500`} />
+                    <div className={`absolute -top-10 -left-10 w-32 h-32 rounded-full bg-gradient-to-br ${gradients[color] || gradients.blue} blur-3xl opacity-30 transition-opacity duration-500`} />
+
+                    <div className="relative z-10">
+                        <h4 className={`text-lg font-bold mb-2 ${textColors[color] || textColors.blue}`}>Insight</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                            {description || "No description available."}
+                        </p>
+                    </div>
                 </div>
             </div>
         </motion.div>
