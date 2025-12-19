@@ -133,6 +133,8 @@ export async function getSchoolAnalytics(schoolId: string) {
         } else {
             completionRate = Math.round(activeRatio * 100);
         }
+        // Ensure it never exceeds 100%
+        completionRate = Math.min(completionRate, 100);
         const avgCPDPerTeacher = totalTeachers > 0 ? (totalCPDEarned / totalTeachers).toFixed(1) : 0;
         const certificatesIssued = attendedCount; // Using attended as a proxy for positive engagement
         const engagementRate = totalEnrollments > 0 ? Math.round((attendedCount / totalEnrollments) * 100) : 0;
