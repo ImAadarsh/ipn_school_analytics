@@ -12,7 +12,7 @@ import {
     CheckCircle, Clock, Star, Zap, Target, Layers, ThumbsUp, Sun, Moon,
     BarChart2, MessageSquare, PieChart as PieChartIcon
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+
 import { format } from 'date-fns';
 
 const COLORS = ['#22c55e', '#3b82f6', '#94a3b8', '#f59e0b', '#8b5cf6'];
@@ -24,35 +24,14 @@ interface DashboardClientProps {
 export default function DashboardClient({ data }: DashboardClientProps) {
     const { school, stats, workshops, charts, topTeachers } = data;
     const [theme, setTheme] = useState('dark');
-    const [isRankingRevealed, setIsRankingRevealed] = useState(false);
+
 
     // Toggle theme
     const toggleTheme = () => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
     };
 
-    const handleRevealRanking = () => {
-        setIsRankingRevealed(true);
-        const duration = 3 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-        const randomInRange = (min: number, max: number) => {
-            return Math.random() * (max - min) + min;
-        }
-
-        const interval: any = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
-    };
 
     // Animation variants
     const containerVariants = {
@@ -434,49 +413,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
                     </div>
 
-                    {/* Grand Ranking Card - Reveal Effect */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="relative overflow-hidden bg-gradient-to-r from-amber-500 to-yellow-600 rounded-3xl p-8 md:p-12 text-white shadow-2xl mt-8"
-                    >
-                        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 bg-black opacity-10 rounded-full blur-3xl"></div>
 
-                        <div className={`relative z-10 transition-all duration-700 ${!isRankingRevealed ? 'filter blur-xl scale-95 opacity-50 select-none' : 'filter-none scale-100 opacity-100'}`}>
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                                <div className="text-center md:text-left">
-                                    <h2 className="text-3xl md:text-4xl font-bold mb-2">IPN Academy Ranking</h2>
-                                    <p className="text-amber-100 text-lg max-w-xl">
-                                        Your school's standing based on total CPD hours earned by your teachers compared to other institutions.
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-6 bg-white/20 backdrop-blur-md p-6 rounded-2xl border border-white/30">
-                                    <div className="p-4 bg-white text-amber-600 rounded-full shadow-lg">
-                                        <Award size={40} />
-                                    </div>
-                                    <div>
-                                        <p className="text-amber-100 text-sm font-medium uppercase tracking-wider">Current Rank</p>
-                                        <div>
-                                            <span className="text-5xl font-extrabold">#{stats.schoolRank}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {!isRankingRevealed && (
-                            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/10 backdrop-blur-sm rounded-3xl cursor-pointer" onClick={handleRevealRanking}>
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 bg-white text-amber-600 font-bold text-xl rounded-full shadow-2xl flex items-center gap-3 hover:bg-amber-50 transition-colors"
-                                >
-                                    <Award className="w-6 h-6" />
-                                    Reveal School Ranking
-                                </motion.button>
-                            </div>
-                        )}
-                    </motion.div>
                 </motion.div>
             </div>
         </div>

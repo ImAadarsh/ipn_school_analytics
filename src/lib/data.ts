@@ -260,23 +260,7 @@ export async function getSchoolAnalytics(schoolId: string) {
         }
 
 
-        // 8. Calculate School Rank (Based on Total CPD)
-        // 8. Calculate School Rank (Based on Total CPD)
-        const [allSchoolStats]: any = await pool.query(
-            `SELECT school_id, SUM(cpd) as total_cpd 
-             FROM payments 
-             WHERE is_attended = 1 
-             GROUP BY school_id 
-             ORDER BY total_cpd DESC`
-        );
 
-        const [schoolCountResult]: any = await pool.query('SELECT COUNT(*) as count FROM schools');
-        const realTotalSchools = schoolCountResult[0].count;
-
-        const rankIndex = allSchoolStats.findIndex((s: any) => s.school_id == schoolId);
-        // If not found (0 CPD), rank is after all active schools.
-        const schoolRank = rankIndex !== -1 ? rankIndex + 1 : allSchoolStats.length + 1;
-        const totalSchools = realTotalSchools || allSchoolStats.length || 1;
 
         return {
             school: school,
@@ -294,8 +278,7 @@ export async function getSchoolAnalytics(schoolId: string) {
                 avgJoinTime: attendedSessionsCount > 0 ? Math.round(totalJoinedMinutes / attendedSessionsCount) : 0,
                 avgRating,
                 totalFeedback: totalFeedback,
-                schoolRank, // New Stat
-                totalSchools, // Context for rank
+
                 statusDistribution: {
                     attended: attendedCount,
                     enrolled: enrolledCount
