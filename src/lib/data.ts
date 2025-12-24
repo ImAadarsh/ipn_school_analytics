@@ -21,17 +21,15 @@ export async function getSchoolAnalytics(schoolId: string) {
         );
 
         // 3. Fetch Workshops Assigned to School
-        // 3. Fetch Workshops (Assigned via school_links OR Enrolled via payments)
+        // 3. Fetch Workshops (Strictly from payments as per user request)
         const [workshops]: any = await pool.query(
             `SELECT DISTINCT w.id, w.name, w.image, w.duration, w.start_date, w.status, w.category_id, w.cpd, c.name as category_name
              FROM workshops w
              LEFT JOIN categories c ON w.category_id = c.id
              WHERE 
-                w.id IN (SELECT workshop_id FROM school_links WHERE school_id = ?) 
-                OR 
                 w.id IN (SELECT workshop_id FROM payments WHERE school_id = ?)
              ORDER BY w.start_date DESC`,
-            [schoolId, schoolId]
+            [schoolId]
         );
 
         // 4. Fetch Payment/Enrollment Data (Detailed)
