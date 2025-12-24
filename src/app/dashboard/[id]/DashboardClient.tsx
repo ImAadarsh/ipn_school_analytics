@@ -109,7 +109,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                         <StatCard title="Avg Join Time" value={`${stats.avgJoinTime} mins`} icon={<TrendingUp />} trend="Participation" color="amber" description="Average time teachers spend in a workshop (joined/attended)." />
 
                         <StatCard title="LIVE Learning Hours" value={stats.totalLearningHours} icon={<Clock />} trend="Time Spent" color="rose" description="Total estimated time teachers have spent learning on the platform." />
-                        <StatCard title="Workshops Assigned" value={stats.totalWorkshops} icon={<Layers />} trend="Available" color="emerald" description="Total number of workshops currently available to your school." />
+                        <StatCard title="Workshops Assigned" value={stats.totalWorkshops} icon={<Layers />} trend="Available" color="emerald" description="Total number of workshops assigned to or enrolled by your teachers." />
                         <StatCard title="Total Feedback" value={stats.totalFeedback} icon={<Star />} trend="Reviews" color="violet" description="Total number of feedback reviews submitted by your teachers." />
                     </motion.div>
 
