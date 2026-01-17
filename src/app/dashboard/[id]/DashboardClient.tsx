@@ -10,10 +10,11 @@ import {
 import {
     Users, BookOpen, Activity, Award, Calendar, TrendingUp,
     CheckCircle, Clock, Star, Zap, Target, Layers, ThumbsUp, Sun, Moon,
-    BarChart2, MessageSquare, PieChart as PieChartIcon
+    BarChart2, MessageSquare, PieChart as PieChartIcon, X
 } from 'lucide-react';
 
 import { format } from 'date-fns';
+import FeedbackModal from '@/components/FeedbackModal';
 
 const COLORS = ['#22c55e', '#3b82f6', '#94a3b8', '#f59e0b', '#8b5cf6'];
 
@@ -24,6 +25,7 @@ interface DashboardClientProps {
 export default function DashboardClient({ data }: DashboardClientProps) {
     const { school, stats, workshops, charts, topTeachers } = data;
     const [theme, setTheme] = useState('dark');
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
 
     // Toggle theme
@@ -110,8 +112,16 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
                         <StatCard title="LIVE Learning Hours" value={stats.totalLearningHours} icon={<Clock />} trend="Time Spent" color="rose" description="Total estimated time teachers have spent learning on the platform." />
                         <StatCard title="Workshops Assigned" value={stats.totalWorkshops} icon={<Layers />} trend="Available" color="emerald" description="Total number of workshops accessed by your teachers." />
-                        <StatCard title="Total Feedback" value={stats.totalFeedback} icon={<Star />} trend="Reviews" color="violet" description="Total number of feedback reviews submitted by your teachers." />
+                        <div onClick={() => setIsFeedbackModalOpen(true)}>
+                            <StatCard title="Total Feedback" value={stats.totalFeedback} icon={<Star />} trend="Reviews" color="violet" description="Total number of feedback reviews submitted by your teachers." />
+                        </div>
                     </motion.div>
+
+                    <FeedbackModal
+                        isOpen={isFeedbackModalOpen}
+                        onClose={() => setIsFeedbackModalOpen(false)}
+                        schoolId={school.id}
+                    />
 
                     {/* Charts Section */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
