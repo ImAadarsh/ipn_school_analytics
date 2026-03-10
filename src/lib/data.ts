@@ -1,6 +1,6 @@
 import pool from '@/lib/db';
 
-export async function getSchoolAnalytics(schoolId: string) {
+export async function getSchoolAnalytics(schoolId: string, year: number = 2025) {
     try {
         // 1. Fetch School Details
         const [schools]: any = await pool.query(
@@ -28,8 +28,9 @@ export async function getSchoolAnalytics(schoolId: string) {
              LEFT JOIN categories c ON w.category_id = c.id
              WHERE 
                 w.id IN (SELECT workshop_id FROM payments WHERE school_id = ?)
+                AND YEAR(w.start_date) = ?
              ORDER BY w.start_date DESC`,
-            [schoolId]
+            [schoolId, year]
         );
 
         // 4. Fetch Payment/Enrollment Data (Detailed)
@@ -41,8 +42,8 @@ export async function getSchoolAnalytics(schoolId: string) {
        JOIN users u ON p.user_id = u.id
        JOIN workshops w ON p.workshop_id = w.id
        LEFT JOIN categories c ON w.category_id = c.id
-       WHERE p.school_id = ?`,
-            [schoolId]
+       WHERE p.school_id = ? AND YEAR(w.start_date) = ?`,
+            [schoolId, year]
         );
 
         // 5. Fetch Login/Activity Data
@@ -50,17 +51,41 @@ export async function getSchoolAnalytics(schoolId: string) {
             `SELECT a.login, a.duration_attend, u.id as user_id
          FROM Attendees a
          JOIN users u ON a.user_id = u.id
-         WHERE u.school_id = ? AND YEAR(a.login) = 2025`,
-            [schoolId]
+         WHERE u.school_id = ? AND YEAR(a.login) = ?`,
+            [schoolId, year]
         );
 
         // 6. Fetch Feedback Data
         const [feedbackData]: any = await pool.query(
-            `SELECT AVG(rating) as avg_rating, COUNT(*) as total_feedback
+            `SELECT AVG(f.rating) as avg_rating, COUNT(*) as total_feedback
          FROM feedback f
          JOIN users u ON f.user_id = u.id
-         WHERE u.school_id = ?`,
-            [schoolId]
+         JOIN workshops w ON f.workshop_id = w.id
+         WHERE u.school_id = ? AND YEAR(w.start_date) = ?`,
+            [schoolId, year]
+        );
+
+        // 6b. Fetch Total Assessments Data
+        const [assessmentsData]: any = await pool.query(
+            `SELECT COUNT(DISTINCT r.workshop_id, r.email) as total_assessments
+         FROM workshop_assessment_responses r
+         JOIN users u ON r.email = u.email
+         JOIN workshops w ON r.workshop_id = w.id
+         WHERE u.school_id = ? AND YEAR(w.start_date) = ?`,
+            [schoolId, year]
+        );
+
+        // 6c. Fetch Top Assessment Giver Data
+        const [topAssessmentGiverData]: any = await pool.query(
+            `SELECT r.full_name, COUNT(DISTINCT r.workshop_id) as assessments_given
+         FROM workshop_assessment_responses r
+         JOIN users u ON r.email = u.email
+         JOIN workshops w ON r.workshop_id = w.id
+         WHERE u.school_id = ? AND YEAR(w.start_date) = ?
+         GROUP BY r.email, r.full_name
+         ORDER BY assessments_given DESC
+         LIMIT 1`,
+            [schoolId, year]
         );
 
         // 7. Fetch User Demographics
@@ -141,6 +166,12 @@ export async function getSchoolAnalytics(schoolId: string) {
         const certificatesIssued = attendedCount; // Using attended as a proxy for positive engagement
         const engagementRate = totalEnrollments > 0 ? Math.round((attendedCount / totalEnrollments) * 100) : 0;
         const totalLearningHours = Math.round(totalLearningMinutes / 60);
+
+        const completionRateFiltered = typeof completionRate !== "number" || isNaN(completionRate) ? 0 : completionRate;
+
+        // Assessment Stats
+        const totalAssessments = assessmentsData[0]?.total_assessments || 0;
+        const topAssessmentGiver = topAssessmentGiverData[0] || null;
 
 
 
@@ -280,6 +311,8 @@ export async function getSchoolAnalytics(schoolId: string) {
                 avgJoinTime: attendedSessionsCount > 0 ? Math.round(totalJoinedMinutes / attendedSessionsCount) : 0,
                 avgRating,
                 totalFeedback: totalFeedback,
+                totalAssessments,
+                topAssessmentGiver,
 
                 statusDistribution: {
                     attended: attendedCount,

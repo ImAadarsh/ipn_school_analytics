@@ -4,19 +4,23 @@ import { notFound } from 'next/navigation';
 
 interface PageProps {
     params: Promise<{ id: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function DashboardPage({ params }: PageProps) {
+export default async function DashboardPage({ params, searchParams }: PageProps) {
     const { id } = await params;
+    const resolvedSearchParams = await searchParams;
+    const yearParam = resolvedSearchParams.year;
+    const year = yearParam ? parseInt(yearParam as string) : 2025;
 
     try {
-        const data = await getSchoolAnalytics(id);
+        const data = await getSchoolAnalytics(id, year);
 
         if (!data) {
             notFound();
         }
 
-        return <DashboardClient data={data} />;
+        return <DashboardClient data={data} currentYear={year} />;
     } catch (error) {
         console.error(error);
         return (

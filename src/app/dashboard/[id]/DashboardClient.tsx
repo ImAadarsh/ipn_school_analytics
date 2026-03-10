@@ -14,23 +14,35 @@ import {
 } from 'lucide-react';
 
 import { format } from 'date-fns';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import FeedbackModal from '@/components/FeedbackModal';
 
 const COLORS = ['#22c55e', '#3b82f6', '#94a3b8', '#f59e0b', '#8b5cf6'];
 
 interface DashboardClientProps {
     data: any;
+    currentYear: number;
 }
 
-export default function DashboardClient({ data }: DashboardClientProps) {
+export default function DashboardClient({ data, currentYear }: DashboardClientProps) {
     const { school, stats, workshops, charts, topTeachers } = data;
     const [theme, setTheme] = useState('dark');
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     // Toggle theme
     const toggleTheme = () => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
+
+    const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const year = e.target.value;
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('year', year);
+        router.push(`${pathname}?${params.toString()}`);
     };
 
 
@@ -78,7 +90,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                                 <h1 className="text-xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent">
                                     {school.name}
                                 </h1>
-                                <p className="text-slate-500 dark:text-slate-400 mt-1 md:mt-2 text-xs md:text-base">School Analytics Dashboard • 2025</p>
+                                <p className="text-slate-500 dark:text-slate-400 mt-1 md:mt-2 text-xs md:text-base">School Analytics Dashboard • {currentYear}</p>
                             </div>
                         </div>
                         <div className="w-full md:w-auto flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
@@ -91,7 +103,15 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                             </button>
                             <div className="bg-white dark:bg-slate-900 px-2.5 py-1 md:px-4 md:py-2 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 md:gap-2 shadow-sm">
                                 <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-500 dark:text-blue-400" />
-                                <span className="text-[10px] md:text-sm text-slate-600 dark:text-slate-300">Academic Year 2025</span>
+                                <select
+                                    className="text-[10px] md:text-sm text-slate-600 dark:text-slate-300 bg-transparent border-none outline-none cursor-pointer pr-1"
+                                    value={currentYear}
+                                    onChange={handleYearChange}
+                                >
+                                    <option value={2026}>Academic Year 2026</option>
+                                    <option value={2025}>Academic Year 2025</option>
+                                    <option value={2024}>Academic Year 2024</option>
+                                </select>
                             </div>
                         </div>
                     </motion.header>
@@ -102,15 +122,25 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                         <StatCard title="Active Learners" value={stats.activeLearners} icon={<Activity />} trend="Engaged" color="green" description="Teachers who have started or completed at least one workshop." />
                         <StatCard title="Total Enrollments" value={stats.totalEnrollments} icon={<BookOpen />} trend="All Time" color="purple" description="Total number of workshop enrollments by your teachers." />
 
+                        <StatCard title="Total Assessments" value={stats.totalAssessments} icon={<Target />} trend="Completed" color="amber" description="Total number of assessments completed by teachers in this academic year." />
+                        <StatCard
+                            title="Top Assessment Giver"
+                            value={stats.topAssessmentGiver ? stats.topAssessmentGiver.assessments_given : 0}
+                            icon={<Award />}
+                            trend={stats.topAssessmentGiver ? stats.topAssessmentGiver.full_name : "None yet"}
+                            color="pink"
+                            description="The teacher who has completed the highest number of unique assessments."
+                        />
                         <StatCard title="LIVE Completion Rate" value={`${stats.completionRate}%`} icon={<CheckCircle />} trend="Success" color="orange" description="Composite score based on active learner participation and workshop feedback." />
+
                         <StatCard title="CPD Hours Earned" value={stats.totalCPDEarned} icon={<Zap />} trend="Total Impact" color="pink" description="Total Continuous Professional Development hours earned by all teachers." />
                         <StatCard title="Avg Rating" value={stats.avgRating} icon={<Star />} trend="Feedback" color="teal" description="Average rating given by your teachers for attended workshops." />
-
                         <StatCard title="Avg CPD / Teacher" value={stats.avgCPDPerTeacher} icon={<BarChart2 />} trend="Per Capita" color="indigo" description="Average CPD hours earned per registered teacher." />
+
                         <StatCard title="Certificates Issued" value={stats.certificatesIssued} icon={<Award />} trend="Achievements" color="cyan" description="Total number of certificates issued for completed workshops." />
                         <StatCard title="Avg Join Time" value={`${stats.avgJoinTime} mins`} icon={<TrendingUp />} trend="Participation" color="amber" description="Average time teachers spend in a workshop (joined/attended)." />
-
                         <StatCard title="LIVE Learning Hours" value={stats.totalLearningHours} icon={<Clock />} trend="Time Spent" color="rose" description="Total estimated time teachers have spent learning on the platform." />
+
                         <StatCard title="Workshops Assigned" value={stats.totalWorkshops} icon={<Layers />} trend="Available" color="emerald" description="Total number of workshops accessed by your teachers." />
                         <div onClick={() => setIsFeedbackModalOpen(true)}>
                             <StatCard title="Total Feedback" value={stats.totalFeedback} icon={<Star />} trend="Reviews" color="violet" description="Total number of feedback reviews submitted by your teachers." />
@@ -130,7 +160,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                         <motion.div variants={itemVariants} className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl dark:shadow-none">
                             <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
                                 <TrendingUp className="w-5 h-5 text-blue-500 dark:text-blue-400" />
-                                Learning Activity (2025)
+                                Learning Activity ({currentYear})
                             </h3>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
